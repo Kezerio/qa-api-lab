@@ -1,3 +1,4 @@
+![CI](https://github.com/Kezerio/qa-api-lab/actions/workflows/ci.yml/badge.svg)
 # QA API Lab (FastAPI) — портфолио-проект для тестирования API
 
 Этот репозиторий показывает базовые навыки QA по API: запуск сервера, ручное тестирование через Swagger/Postman и автопроверки (pytest) с CI в GitHub Actions.

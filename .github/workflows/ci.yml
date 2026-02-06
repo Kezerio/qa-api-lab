@@ -5,6 +5,11 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch:
+    push:
+      branches: [ "main" ]
+    pull_request:
+      branches: [ "main" ]
 
 jobs:
   test:
@@ -27,3 +32,4 @@ jobs:
       - name: Run tests
         run: |
           python -m pytest -q
+          
