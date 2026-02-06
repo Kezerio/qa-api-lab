@@ -1,11 +1,13 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, EmailStr
+from pydantic import Field
+
 
 app = FastAPI(title="QA API Lab", version="1.0")
 
 class LoginRequest(BaseModel):
     email: EmailStr
-    password: str
+    password: str = Field (min_length=6)
 
 @app.get("/health")
 def health():
@@ -24,4 +26,4 @@ def login(body: LoginRequest):
     if email == "user@test.com" and password == "P@ssw0rd123":
         return {"ok": True, "message": "dashboard"}
 
-    return {"ok": False, "message": "Invalid email or password"}
+    raise HTTPException(status_code=401, detail="Invalid email or password")
