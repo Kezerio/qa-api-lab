@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QA API Lab — Login</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; background:#0b1220; color:#e6eefc; margin:0; }
+    .wrap { max-width: 520px; margin: 60px auto; padding: 24px; background:#111a2e; border:1px solid #1f2a44; border-radius: 14px; }
+    h1 { font-size: 20px; margin: 0 0 16px; }
+    label { display:block; margin: 12px 0 6px; color:#b9c7e6; }
+    input { width:100%; padding: 12px; border-radius: 10px; border:1px solid #2a3a60; background:#0b1220; color:#e6eefc; }
+    button { margin-top: 14px; width:100%; padding: 12px; border-radius: 10px; border:0; background:#4c7dff; color:white; font-weight:600; cursor:pointer; }
+    button:disabled { opacity:.6; cursor:not-allowed; }
+    .box { margin-top: 14px; padding: 12px; border-radius: 10px; background:#0b1220; border:1px solid #2a3a60; white-space: pre-wrap; }
+    .muted { color:#9db0d7; font-size: 12px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>QA API Lab — Login Form</h1>
+
+    <label for="email">Email</label>
+    <input id="email" placeholder="user@test.com" autocomplete="username" />
+
+    <label for="password">Пароль</label>
+    <input id="password" placeholder="P@ssw0rd123" type="password" autocomplete="current-password" />
+
+    <button id="btn">Отправить</button>
+
+    <div class="muted">
+      Подсказка: если email не похож на email или пароль короче 6 символов, FastAPI вернёт 422 (валидация на входе).
+    </div>
+
+    <div id="out" class="box">Здесь появится ответ сервера…</div>
+  </div>
+
+<script>
+  const btn = document.getElementById('btn');
+  const out = document.getElementById('out');
+
+  function show(obj) {
+    out.textContent = typeof obj === "string" ? obj : JSON.stringify(obj, null, 2);
+  }
+
+  btn.addEventListener('click', async () => {
+    btn.disabled = true;
+    show("Отправляю запрос...");
+
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    try {
+      const res = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const text = await res.text();
+      let data;
+      try { data = JSON.parse(text); } catch { data = text; }
+
+      show({ status: res.status, response: data });
+    } catch (e) {
+      show({ error: String(e) });
+    } finally {
+      btn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>
