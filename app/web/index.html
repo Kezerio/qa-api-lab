@@ -3,71 +3,424 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>QA API Lab — Login</title>
+  <title>QA API Login Lab</title>
+
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; background:#0b1220; color:#e6eefc; margin:0; }
-    .wrap { max-width: 520px; margin: 60px auto; padding: 24px; background:#111a2e; border:1px solid #1f2a44; border-radius: 14px; }
-    h1 { font-size: 20px; margin: 0 0 16px; }
-    label { display:block; margin: 12px 0 6px; color:#b9c7e6; }
-    input { width:100%; padding: 12px; border-radius: 10px; border:1px solid #2a3a60; background:#0b1220; color:#e6eefc; }
-    button { margin-top: 14px; width:100%; padding: 12px; border-radius: 10px; border:0; background:#4c7dff; color:white; font-weight:600; cursor:pointer; }
-    button:disabled { opacity:.6; cursor:not-allowed; }
-    .box { margin-top: 14px; padding: 12px; border-radius: 10px; background:#0b1220; border:1px solid #2a3a60; white-space: pre-wrap; }
-    .muted { color:#9db0d7; font-size: 12px; margin-top: 10px; }
+    :root{
+      --bg: #0b0f17;
+      --card: rgba(255,255,255,0.06);
+      --card2: rgba(255,255,255,0.08);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.65);
+      --border: rgba(255,255,255,0.14);
+      --bad: #ff5c73;
+      --ok: #39d98a;
+      --warn: #ffcc66;
+      --shadow: 0 20px 60px rgba(0,0,0,0.55);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      background:
+        radial-gradient(900px 500px at 20% 15%, rgba(90, 140, 255, 0.20), transparent 60%),
+        radial-gradient(700px 500px at 80% 30%, rgba(255, 90, 190, 0.14), transparent 60%),
+        radial-gradient(900px 650px at 50% 90%, rgba(70, 255, 190, 0.08), transparent 60%),
+        var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+      padding: 24px;
+    }
+
+    .card{
+      width: min(520px, 100%);
+      background: linear-gradient(180deg, var(--card), rgba(255,255,255,0.04));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    .header{
+      padding: 18px 20px 10px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .title{
+      margin:0;
+      font-size: 20px;
+      letter-spacing: 0.2px;
+    }
+
+    .subtitle{
+      margin:6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .body{
+      padding: 18px 20px 16px;
+    }
+
+    label{
+      display:block;
+      font-size: 13px;
+      color: var(--muted);
+      margin: 12px 0 6px;
+    }
+
+    .input{
+      width: 100%;
+      padding: 12px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.25);
+      color: var(--text);
+      outline: none;
+      font-size: 15px;
+    }
+    .input:focus{
+      border-color: rgba(120, 170, 255, 0.55);
+      box-shadow: 0 0 0 3px rgba(120, 170, 255, 0.18);
+    }
+
+    .field{
+      position: relative;
+    }
+
+    .pw-wrap{
+      display:flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pw-field{
+      position: relative;
+      flex: 1;
+    }
+
+    .pw-field .input{
+      padding-right: 44px; /* место под глаз */
+    }
+
+    .eye{
+      position:absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      user-select:none;
+    }
+    .eye:hover{
+      background: rgba(255,255,255,0.08);
+    }
+
+    .hint{
+      margin: 8px 0 0;
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .status{
+      margin-top: 8px;
+      font-size: 12.5px;
+      line-height: 1.35;
+      display:flex;
+      gap: 8px;
+      align-items: center;
+      color: var(--muted);
+    }
+    .dot{
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+      flex: 0 0 auto;
+    }
+    .status.ok{ color: rgba(57,217,138,0.95); }
+    .status.ok .dot{ background: var(--ok); }
+    .status.bad{ color: rgba(255,92,115,0.95); }
+    .status.bad .dot{ background: var(--bad); }
+    .status.warn{ color: rgba(255,204,102,0.95); }
+    .status.warn .dot{ background: var(--warn); }
+
+    .actions{
+      display:flex;
+      gap: 10px;
+      margin-top: 16px;
+      align-items:center;
+    }
+
+    .btn{
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: linear-gradient(180deg, rgba(120,170,255,0.22), rgba(120,170,255,0.12));
+      color: var(--text);
+      font-size: 15px;
+      cursor: pointer;
+      transition: transform 0.05s ease;
+    }
+    .btn:active{ transform: translateY(1px); }
+    .btn:disabled{
+      cursor:not-allowed;
+      opacity: 0.55;
+      filter: grayscale(0.2);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .out{
+      margin-top: 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.28);
+      padding: 12px;
+      min-height: 92px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12.5px;
+      color: rgba(255,255,255,0.88);
+      overflow:auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .footer{
+      padding: 12px 20px 16px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12.5px;
+      background: rgba(255,255,255,0.02);
+      line-height: 1.35;
+    }
+
+    .kbd{
+      padding: 2px 8px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.04);
+      font-family: ui-monospace, monospace;
+      font-size: 12px;
+      color: rgba(255,255,255,0.82);
+    }
   </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <h1>QA API Lab — Login Form</h1>
-
-    <label for="email">Email</label>
-    <input id="email" placeholder="user@test.com" autocomplete="username" />
-
-    <label for="password">Пароль</label>
-    <input id="password" placeholder="P@ssw0rd123" type="password" autocomplete="current-password" />
-
-    <button id="btn">Отправить</button>
-
-    <div class="muted">
-      Подсказка: если email не похож на email или пароль короче 6 символов, FastAPI вернёт 422 (валидация на входе).
+  <div class="card">
+    <div class="header">
+      <h1 class="title">Login form</h1>
+      <p class="subtitle">
+        Тут мы проверяем правила <b>email</b> и <b>password</b> прямо в браузере, а потом отправляем запрос на <span class="kbd">POST /login</span>.
+      </p>
     </div>
 
-    <div id="out" class="box">Здесь появится ответ сервера…</div>
+    <div class="body">
+      <form id="form" autocomplete="off">
+        <label for="email">Email</label>
+        <div class="field">
+          <input class="input" id="email" name="email" placeholder="user@test.com" />
+        </div>
+        <div id="emailStatus" class="status"><span class="dot"></span><span>Введи email.</span></div>
+
+        <label for="password">Password</label>
+        <div class="pw-wrap">
+          <div class="pw-field">
+            <input class="input" id="password" name="password" type="password" placeholder="Password1" />
+            <button id="pwToggle" class="eye" type="button" aria-label="Show/Hide password" title="Show/Hide">
+              <!-- SVG "eye" -->
+              <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M2.1 12s3.6-7 9.9-7 9.9 7 9.9 7-3.6 7-9.9 7S2.1 12 2.1 12Z" stroke="rgba(255,255,255,0.85)" stroke-width="2"/>
+                <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" stroke="rgba(255,255,255,0.85)" stroke-width="2"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div id="pwStatus" class="status"><span class="dot"></span><span>Введи пароль.</span></div>
+
+        <div class="hint">
+          Правила пароля: минимум 8 символов, минимум 1 заглавная A-Z, минимум 1 строчная a-z, минимум 1 цифра 0-9, и только буквы/цифры (без символов).
+        </div>
+
+        <div class="actions">
+          <button id="btn" class="btn" type="submit" disabled>Проверка</button>
+        </div>
+
+        <div id="out" class="out">Готов. Введи данные — я покажу, что проходит/не проходит, и отправлю запрос.</div>
+      </form>
+    </div>
+
+    <div class="footer">
+      Подсказка: можно нажать <span class="kbd">Enter</span> в поле пароля — это тоже отправит форму, но только если правила уже пройдены.
+    </div>
   </div>
 
-<script>
-  const btn = document.getElementById('btn');
-  const out = document.getElementById('out');
+  <script>
+    // ====== НАШИ ПРАВИЛА (ФРОНТ) ======
+    // Email: корректный формат + домен из allowlist
+    const ALLOWED_DOMAINS = new Set(["test.com", "we.ru"]);
 
-  function show(obj) {
-    out.textContent = typeof obj === "string" ? obj : JSON.stringify(obj, null, 2);
-  }
+    // Password: 8+; 1 uppercase; 1 lowercase; 1 digit; only letters/digits
+    const PASSWORD_RE = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
-  btn.addEventListener('click', async () => {
-    btn.disabled = true;
-    show("Отправляю запрос...");
+    const emailEl = document.getElementById("email");
+    const pwEl = document.getElementById("password");
+    const emailStatusEl = document.getElementById("emailStatus");
+    const pwStatusEl = document.getElementById("pwStatus");
+    const outEl = document.getElementById("out");
+    const btnEl = document.getElementById("btn");
+    const formEl = document.getElementById("form");
 
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+    const pwToggle = document.getElementById("pwToggle");
+    const eyeIcon = document.getElementById("eyeIcon");
+    let showPassword = false;
 
-    try {
-      const res = await fetch('/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-
-      const text = await res.text();
-      let data;
-      try { data = JSON.parse(text); } catch { data = text; }
-
-      show({ status: res.status, response: data });
-    } catch (e) {
-      show({ error: String(e) });
-    } finally {
-      btn.disabled = false;
+    function setStatus(el, type, text){
+      el.classList.remove("ok","bad","warn");
+      if (type) el.classList.add(type);
+      el.querySelector("span:last-child").textContent = text;
     }
-  });
-</script>
+
+    function validateEmail(value){
+      const v = (value || "").trim();
+
+      if (!v) {
+        return { ok: false, kind: "warn", msg: "Введи email." };
+      }
+
+      // простая проверка формата (нам достаточно для учебного проекта)
+      const basicFormatOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+      if (!basicFormatOk) {
+        return { ok: false, kind: "bad", msg: "Формат email неверный (пример: user@test.com)." };
+      }
+
+      const domain = v.split("@")[1].toLowerCase();
+      if (!ALLOWED_DOMAINS.has(domain)) {
+        return { ok: false, kind: "bad", msg: `Домен "${domain}" не разрешён. Разрешены: ${Array.from(ALLOWED_DOMAINS).join(", ")}.` };
+      }
+
+      return { ok: true, kind: "ok", msg: "Email проходит правила." };
+    }
+
+    function validatePassword(value){
+      const v = value || "";
+
+      if (!v) {
+        return { ok: false, kind: "warn", msg: "Введи пароль." };
+      }
+
+      if (!PASSWORD_RE.test(v)) {
+        // разложим ошибку “по-человечески”
+        const onlyLettersDigits = /^[A-Za-z\d]+$/.test(v);
+        const hasUpper = /[A-Z]/.test(v);
+        const hasLower = /[a-z]/.test(v);
+        const hasDigit = /\d/.test(v);
+        const lenOk = v.length >= 8;
+
+        const problems = [];
+        if (!lenOk) problems.push("нужно минимум 8 символов");
+        if (!hasUpper) problems.push("нужна 1 заглавная буква (A-Z)");
+        if (!hasLower) problems.push("нужна 1 строчная буква (a-z)");
+        if (!hasDigit) problems.push("нужна 1 цифра (0-9)");
+        if (!onlyLettersDigits) problems.push("нельзя символы (только буквы/цифры)");
+
+        return { ok: false, kind: "bad", msg: "Пароль не проходит: " + problems.join(", ") + "." };
+      }
+
+      return { ok: true, kind: "ok", msg: "Пароль проходит правила." };
+    }
+
+    function refreshValidation(){
+      const e = validateEmail(emailEl.value);
+      setStatus(emailStatusEl, e.kind, e.msg);
+
+      const p = validatePassword(pwEl.value);
+      setStatus(pwStatusEl, p.kind, p.msg);
+
+      // кнопку включаем только когда оба правила пройдены
+      btnEl.disabled = !(e.ok && p.ok);
+
+      // чтобы тебе было видно “прошло / не прошло” даже без отправки
+      if (e.ok && p.ok) {
+        outEl.textContent = "ОК: по правилам фронта email и пароль проходят. Можно нажимать «Проверка» (отправка на /login).";
+      } else {
+        outEl.textContent = "Проверь поля выше: я подсветил, что именно не проходит правила.";
+      }
+    }
+
+    // ====== ГЛАЗИК (не зависит от ввода/стирания/вставки) ======
+    function syncEye(){
+      pwEl.type = showPassword ? "text" : "password";
+
+      // делаем “перечёркнутый глаз” когда пароль скрыт
+      // просто рисуем/убираем линию поверх SVG
+      const existing = document.getElementById("eyeSlash");
+      if (!showPassword && !existing) {
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        line.setAttribute("id", "eyeSlash");
+        line.setAttribute("d", "M4 20L20 4");
+        line.setAttribute("stroke", "rgba(255,255,255,0.85)");
+        line.setAttribute("stroke-width", "2");
+        eyeIcon.appendChild(line);
+      }
+      if (showPassword && existing) existing.remove();
+    }
+
+    pwToggle.addEventListener("click", () => {
+      showPassword = !showPassword;
+      syncEye();
+      pwEl.focus();
+    });
+
+    // ====== LIVE VALIDATION ======
+    emailEl.addEventListener("input", refreshValidation);
+    pwEl.addEventListener("input", refreshValidation);
+
+    // ====== SUBMIT => POST /login ======
+    formEl.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      refreshValidation();
+      if (btnEl.disabled) return;
+
+      outEl.textContent = "Отправка запроса на /login ...";
+
+      const payload = {
+        email: emailEl.value.trim(),
+        password: pwEl.value
+      };
+
+      try {
+        const r = await fetch("/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const text = await r.text();
+        outEl.textContent = `HTTP ${r.status}\n` + text;
+
+      } catch (e) {
+        outEl.textContent = "Network error: " + e;
+      }
+    });
+
+    // стартовое состояние
+    syncEye();
+    refreshValidation();
+  </script>
 </body>
 </html>
